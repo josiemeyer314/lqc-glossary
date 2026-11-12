@@ -1,3 +1,10 @@
+const LQC_GLOSSARY_VERSION = "0.1.0";
+
+console.log(
+    `%cLQC Glossary ${LQC_GLOSSARY_VERSION} loaded`,
+    "color: green; font-weight: bold;"
+);
+
 (function () {
 
     ////////////////////////////////////////////////////////////
