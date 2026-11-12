@@ -1,4 +1,4 @@
-const LQC_GLOSSARY_VERSION = "0.2.1";
+const LQC_GLOSSARY_VERSION = "0.2.2";
 
 console.log(
   `%cLQC Glossary ${LQC_GLOSSARY_VERSION} loaded`,
@@ -37,7 +37,8 @@ console.log(
     glossary = await response.json();
 
     console.log(
-      `[LQC] Loaded ${Object.keys(glossary).length} glossary entries`
+      "glossary loaded"
+      //`[LQC] Loaded ${Object.keys(glossary).length} glossary entries`
     );
 
     console.table(glossary);
