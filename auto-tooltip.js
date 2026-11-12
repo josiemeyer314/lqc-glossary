@@ -34,4 +34,343 @@ console.log(
       );
     }
 
-    glossary = await
+    glossary = await response.json();
+
+    console.log(
+      `[LQC] Loaded ${Object.keys(glossary).length} glossary entries`
+    );
+
+    console.table(glossary);
+  }
+
+  //////////////////////////////////////////////////////
+  // ESCAPING
+  //////////////////////////////////////////////////////
+
+  function escapeHtml(text) {
+
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  //////////////////////////////////////////////////////
+  // TOOLTIP DISPLAY
+  //////////////////////////////////////////////////////
+
+  function positionTooltip(target, tooltip) {
+
+    tooltip.classList.remove(
+      "left",
+      "right",
+      "top"
+    );
+
+    let left =
+      target.getBoundingClientRect().left +
+      window.scrollX +
+      target.offsetWidth / 2 -
+      tooltip.offsetWidth / 2;
+
+    let top =
+      target.getBoundingClientRect().top +
+      window.scrollY -
+      tooltip.offsetHeight -
+      20;
+
+    if (left < 0) {
+
+      left =
+        target.getBoundingClientRect().left +
+        window.scrollX;
+
+      tooltip.classList.add("left");
+    }
+
+    if (
+      left + tooltip.offsetWidth >
+      window.innerWidth
+    ) {
+
+      left =
+        window.innerWidth -
+        tooltip.offsetWidth -
+        10;
+
+      tooltip.classList.add("right");
+    }
+
+    if (top < window.scrollY) {
+
+      top =
+        target.getBoundingClientRect().bottom +
+        window.scrollY +
+        10;
+
+      tooltip.classList.add("top");
+    }
+
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  }
+
+  function showTooltip(target) {
+
+    const content =
+      target.dataset.tooltip;
+
+    if (!content) {
+      return;
+    }
+
+    hideTooltip(target);
+
+    const tooltip =
+      document.createElement("div");
+
+    tooltip.className =
+      "qise-tooltip";
+
+    tooltip.innerHTML =
+      content;
+
+    document.body.appendChild(
+      tooltip
+    );
+
+    positionTooltip(
+      target,
+      tooltip
+    );
+
+    target._lqcTooltip =
+      tooltip;
+  }
+
+  function hideTooltip(target) {
+
+    if (
+      !target ||
+      !target._lqcTooltip
+    ) {
+      return;
+    }
+
+    target._lqcTooltip.remove();
+
+    delete target._lqcTooltip;
+  }
+
+  //////////////////////////////////////////////////////
+  // MARKUP
+  //////////////////////////////////////////////////////
+
+  function glossaryMarkup(key) {
+
+    const entry =
+      glossary[key];
+
+    if (!entry) {
+
+      console.warn(
+        `[LQC] Missing glossary entry: ${key}`
+      );
+
+      return key;
+    }
+
+    return (
+      `<span class="qise-term" ` +
+      `data-tooltip="${escapeHtml(entry.definition)}">` +
+      `${escapeHtml(key)}` +
+      `</span>`
+    );
+  }
+
+  function customMarkup(
+    label,
+    tooltip
+  ) {
+
+    return (
+      `<span class="qise-custom-tooltip" ` +
+      `data-tooltip="${escapeHtml(tooltip)}">` +
+      `${escapeHtml(label)}` +
+      `</span>`
+    );
+  }
+
+  //////////////////////////////////////////////////////
+  // PARSER
+  //////////////////////////////////////////////////////
+
+  function processMarkup(html) {
+
+    return html.replace(
+      /\[\[(.*?)\]\]/gs,
+      (_, content) => {
+
+        content =
+          content.trim();
+
+        const separator =
+          content.indexOf("::");
+
+        if (separator >= 0) {
+
+          return customMarkup(
+            content
+              .slice(0, separator)
+              .trim(),
+
+            content
+              .slice(separator + 2)
+              .trim()
+          );
+        }
+
+        return glossaryMarkup(
+          content
+        );
+      }
+    );
+  }
+
+  //////////////////////////////////////////////////////
+  // PROCESS SURVEY
+  //////////////////////////////////////////////////////
+
+  function processSurveyCanvas() {
+
+    const canvas =
+      document.querySelector(
+        CANVAS_SELECTOR
+      );
+
+    if (!canvas) {
+
+      console.warn(
+        "[LQC] survey-canvas not found"
+      );
+
+      return;
+    }
+
+    const original =
+      canvas.innerHTML;
+
+    if (!original.includes("[[")) {
+      return;
+    }
+
+    const processed =
+      processMarkup(original);
+
+    if (processed !== original) {
+
+      canvas.innerHTML =
+        processed;
+
+      console.log(
+        "[LQC] Tooltip replacements completed."
+      );
+
+      console.log(
+        document.querySelectorAll(
+          ".qise-term,.qise-custom-tooltip"
+        ).length,
+        "tooltip(s) inserted"
+      );
+    }
+  }
+
+  //////////////////////////////////////////////////////
+  // EVENTS
+  //////////////////////////////////////////////////////
+
+  document.addEventListener(
+    "mouseover",
+    (event) => {
+
+      const term =
+        event.target.closest(
+          ".qise-term,.qise-custom-tooltip"
+        );
+
+      if (term) {
+        showTooltip(term);
+      }
+    }
+  );
+
+  document.addEventListener(
+    "mouseout",
+    (event) => {
+
+      const term =
+        event.target.closest(
+          ".qise-term,.qise-custom-tooltip"
+        );
+
+      if (term) {
+        hideTooltip(term);
+      }
+    }
+  );
+
+  //////////////////////////////////////////////////////
+  // STARTUP
+  //////////////////////////////////////////////////////
+
+  async function initialize() {
+
+    try {
+
+      await loadGlossary();
+
+      processSurveyCanvas();
+
+      const observer =
+        new MutationObserver(
+          processSurveyCanvas
+        );
+
+      observer.observe(
+        document.body,
+        {
+          childList: true,
+          subtree: true
+        }
+      );
+
+      console.log(
+        "[LQC] Initialization complete"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "[LQC] Initialization failed:",
+        error
+      );
+    }
+  }
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      initialize
+    );
+
+  } else {
+
+    initialize();
+  }
+
+})();
