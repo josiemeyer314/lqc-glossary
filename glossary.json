@@ -1,6 +1,6 @@
 {
     "QIST": {
-        "definition": "Quantum Information Science and Technology -- the emerging interdisciplinary field of research and study looking to use the laws of quantum mechanics to make fundamental breakthroughs in areas such as computing, communications, and sensing."
+        "definition": "Quantum Information Science and Technology: the emerging interdisciplinary field of research and study looking to use the laws of quantum mechanics to make fundamental breakthroughs in areas such as computing, communications, and sensing."
     },
     
     "SLC": {
@@ -8,7 +8,10 @@
     },
 
     "FLC": {
-        "definition": "Foundational Lab Competency (i.e. elementary, assessable QIST-relevant lab skills students acquire as stepping stones toward working on real quantum hardware."
-    }
+        "definition": "Foundational Lab Competency (i.e. elementary, assessable QIST-relevant lab skills students acquire as stepping stones toward working on real quantum hardware.)"
+    },
+
+    "FLC/SLC": {
+        "definition": "Foundational/Synthesis Lab Competencies (the structure by which a synthesis project on research-grade quantum hardware is approached via a hierarchy of actionable fundamentals on accessible, teaching lab hardware."
 
 }
