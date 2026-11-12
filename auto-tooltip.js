@@ -14,7 +14,7 @@ console.log(
     const GLOSSARY_URL =
         "https://josiemeyer314.github.io/lqc-glossary/glossary.json";
 
-    const QUESTION_SELECTOR = ".QuestionText";
+    const QUESTION_SELECTOR = "#survey-canvas";
 
     let glossary = {};
 
@@ -325,26 +325,23 @@ console.table(glossary);
     // QUESTION PROCESSING
     ////////////////////////////////////////////////////////////
 
-    function processQuestion(
-        question
-    ) {
+    function processQuestion(question) {
 
-        if (
-            question.dataset
-                .qiseProcessed
-        ) {
-            return;
-        }
+    const original =
+        question.innerHTML;
 
-        question.innerHTML =
-            processMarkup(
-                question.innerHTML
-            );
+    const processed =
+        processMarkup(original);
 
-        question.dataset
-            .qiseProcessed =
-            "true";
+    if (original !== processed) {
+
+        question.innerHTML = processed;
+
+        console.log(
+            "Processed glossary terms"
+        );
     }
+}
 
     function processAllQuestions() {
 
