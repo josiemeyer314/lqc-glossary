@@ -1,4 +1,4 @@
-const LQC_GLOSSARY_VERSION = "0.1.0";
+const LQC_GLOSSARY_VERSION = "0.1.1";
 
 console.log(
     `%cLQC Glossary ${LQC_GLOSSARY_VERSION} loaded`,
