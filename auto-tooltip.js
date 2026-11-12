@@ -1,40 +1,75 @@
 (function () {
 
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     // CONFIG
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
-    const TERM_SELECTOR =
-        ".qise-term,.qise-custom-tooltip";
+    const GLOSSARY_URL =
+        "https://josiemeyer314.github.io/lqc-glossary/glossary.json";
 
-    //////////////////////////////////////////////////////
-    // HTML ESCAPING
-    //////////////////////////////////////////////////////
+    const QUESTION_SELECTOR = ".QuestionText";
 
-    function escapeHtml(text) {
-        return String(text)
+    let glossary = {};
+
+    ////////////////////////////////////////////////////////////
+    // LOAD GLOSSARY
+    ////////////////////////////////////////////////////////////
+
+    async function loadGlossary() {
+
+        try {
+
+            const response =
+                await fetch(GLOSSARY_URL);
+
+            glossary =
+                await response.json();
+
+        }
+        catch (error) {
+
+            console.error(
+                "Failed to load glossary:",
+                error
+            );
+        }
+    }
+
+    ////////////////////////////////////////////////////////////
+    // ESCAPING
+    ////////////////////////////////////////////////////////////
+
+    function escapeHtml(str) {
+
+        return String(str)
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;");
     }
 
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     // TOOLTIP POSITIONING
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
-    function positionTooltip(target, tooltip) {
+    function positionTooltip(
+        target,
+        tooltip
+    ) {
 
-        if (window.innerWidth <
-            tooltip.offsetWidth * 1.5) {
+        if (
+            window.innerWidth <
+            tooltip.offsetWidth * 1.5
+        ) {
 
             tooltip.style.maxWidth =
-                (window.innerWidth / 2) + "px";
+                (window.innerWidth / 2)
+                + "px";
 
         } else {
 
-            tooltip.style.maxWidth = "340px";
-
+            tooltip.style.maxWidth =
+                "340px";
         }
 
         let posLeft =
@@ -92,15 +127,21 @@
             tooltip.classList.add("top");
         }
 
-        tooltip.style.left = posLeft + "px";
-        tooltip.style.top = posTop + "px";
+        tooltip.style.left =
+            posLeft + "px";
+
+        tooltip.style.top =
+            posTop + "px";
     }
 
-    //////////////////////////////////////////////////////
-    // TOOLTIP CREATION
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
+    // TOOLTIP MANAGEMENT
+    ////////////////////////////////////////////////////////////
 
-    function showTooltip(target, content) {
+    function showTooltip(
+        target,
+        content
+    ) {
 
         if (target._qiseTooltip) {
             return;
@@ -109,20 +150,32 @@
         const tooltip =
             document.createElement("div");
 
-        tooltip.className = "qise-tooltip";
+        tooltip.className =
+            "qise-tooltip";
 
-        tooltip.innerHTML = content;
+        tooltip.innerHTML =
+            content;
 
-        document.body.appendChild(tooltip);
+        document.body.appendChild(
+            tooltip
+        );
 
-        target._qiseTooltip = tooltip;
+        target._qiseTooltip =
+            tooltip;
 
-        positionTooltip(target, tooltip);
+        positionTooltip(
+            target,
+            tooltip
+        );
 
-        const reposition = () =>
-            positionTooltip(target, tooltip);
+        const reposition =
+            () => positionTooltip(
+                target,
+                tooltip
+            );
 
-        target._repositionHandler = reposition;
+        target._qiseResize =
+            reposition;
 
         window.addEventListener(
             "resize",
@@ -130,93 +183,115 @@
         );
     }
 
-    function hideTooltip(target) {
+    function hideTooltip(
+        target
+    ) {
 
-        if (!target._qiseTooltip) {
+        if (
+            !target._qiseTooltip
+        ) {
             return;
         }
 
         window.removeEventListener(
             "resize",
-            target._repositionHandler
+            target._qiseResize
         );
 
         target._qiseTooltip.remove();
 
         delete target._qiseTooltip;
-        delete target._repositionHandler;
+        delete target._qiseResize;
     }
 
-    //////////////////////////////////////////////////////
-    // MARKUP GENERATORS
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
+    // MARKUP HELPERS
+    ////////////////////////////////////////////////////////////
 
-    function glossaryMarkup(term) {
+    function glossaryMarkup(
+        key
+    ) {
 
-        if (
-            !window.LQCglossary ||
-            !window.LQCglossary[term]
-        ) {
-            return term;
+        const entry =
+            glossary[key];
+
+        if (!entry) {
+            return key;
         }
 
         return (
-            '<span class="qise-term" data-tooltip="' +
+            '<span class="qise-term" ' +
+            'data-tooltip="' +
             escapeHtml(
-                window.LQCglossary[term]
-                    .definition
+                entry.definition
             ) +
             '">' +
-            escapeHtml(term) +
+            escapeHtml(key) +
             '</span>'
         );
     }
 
     function customMarkup(
         label,
-        tooltipText
+        tooltip
     ) {
 
         return (
-            '<span class="qise-custom-tooltip" data-tooltip="' +
-            escapeHtml(tooltipText) +
+            '<span class="qise-custom-tooltip" ' +
+            'data-tooltip="' +
+            escapeHtml(
+                tooltip
+            ) +
             '">' +
-            escapeHtml(label) +
+            escapeHtml(
+                label
+            ) +
             '</span>'
         );
     }
 
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     // PARSER
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
-    function processMarkup(html) {
+    function processMarkup(
+        html
+    ) {
 
         return html.replace(
             /\[\[(.*?)\]\]/gs,
-            function (_, content) {
+            function (
+                match,
+                content
+            ) {
 
                 content =
                     content.trim();
 
-                if (
-                    content.includes("::")
-                ) {
+                const separator =
+                    content.indexOf(
+                        "::"
+                    );
 
-                    const index =
-                        content.indexOf("::");
+                if (
+                    separator >= 0
+                ) {
 
                     const label =
                         content
-                            .slice(0, index)
-                            .trim();
+                        .slice(
+                            0,
+                            separator
+                        )
+                        .trim();
 
                     const tooltip =
                         content
-                            .slice(
-                                index + 2
-                            )
-                            .trim();
+                        .slice(
+                            separator
+                            + 2
+                        )
+                        .trim();
 
                     return customMarkup(
                         label,
@@ -231,11 +306,13 @@
         );
     }
 
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     // QUESTION PROCESSING
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
-    function processQuestion(question) {
+    function processQuestion(
+        question
+    ) {
 
         if (
             question.dataset
@@ -250,48 +327,46 @@
             );
 
         question.dataset
-            .qiseProcessed = "true";
+            .qiseProcessed =
+            "true";
     }
 
     function processAllQuestions() {
 
         document
             .querySelectorAll(
-                ".QuestionText"
+                QUESTION_SELECTOR
             )
             .forEach(
                 processQuestion
             );
     }
 
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
     // EVENTS
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
     document.addEventListener(
         "mouseenter",
-        function (event) {
+        function (
+            event
+        ) {
 
             const trigger =
                 event.target.closest(
-                    TERM_SELECTOR
+                    ".qise-term,.qise-custom-tooltip"
                 );
 
-            if (!trigger) {
-                return;
-            }
-
-            const content =
-                trigger.dataset
-                    .tooltip;
-
-            if (!content) {
+            if (
+                !trigger
+            ) {
                 return;
             }
 
             showTooltip(
                 trigger,
-                content
+                trigger.dataset
+                    .tooltip
             );
 
         },
@@ -300,28 +375,36 @@
 
     document.addEventListener(
         "mouseleave",
-        function (event) {
+        function (
+            event
+        ) {
 
             const trigger =
                 event.target.closest(
-                    TERM_SELECTOR
+                    ".qise-term,.qise-custom-tooltip"
                 );
 
-            if (!trigger) {
+            if (
+                !trigger
+            ) {
                 return;
             }
 
-            hideTooltip(trigger);
+            hideTooltip(
+                trigger
+            );
 
         },
         true
     );
 
-    //////////////////////////////////////////////////////
-    // INITIALIZATION
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
+    // STARTUP
+    ////////////////////////////////////////////////////////////
 
-    function initialize() {
+    async function initialize() {
+
+        await loadGlossary();
 
         processAllQuestions();
 
