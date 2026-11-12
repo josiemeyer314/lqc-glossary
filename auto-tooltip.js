@@ -1,11 +1,13 @@
-const LQC_GLOSSARY_VERSION = "0.2.2";
+
+
+(function () {
+
+const LQC_GLOSSARY_VERSION = "0.2.3";
 
 console.log(
   `%cLQC Glossary ${LQC_GLOSSARY_VERSION} loaded`,
   "color: green; font-weight: bold;"
 );
-
-(function () {
 
   //////////////////////////////////////////////////////
   // CONFIG
