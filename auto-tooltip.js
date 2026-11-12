@@ -154,8 +154,8 @@
     function glossaryMarkup(term) {
 
         if (
-            !window.QISEGlossary ||
-            !window.QISEGlossary[term]
+            !window.LQCglossary ||
+            !window.LQCglossary[term]
         ) {
             return term;
         }
@@ -163,7 +163,7 @@
         return (
             '<span class="qise-term" data-tooltip="' +
             escapeHtml(
-                window.QISEGlossary[term]
+                window.LQCglossary[term]
                     .definition
             ) +
             '">' +
