@@ -334,7 +334,7 @@ console.log(
       await loadGlossary();
 
       processSurveyCanvas();
-
+    /*
       const observer =
         new MutationObserver(
           processSurveyCanvas
@@ -347,6 +347,7 @@ console.log(
           subtree: true
         }
       );
+      */
 
       console.log(
         "[LQC] Initialization complete"
