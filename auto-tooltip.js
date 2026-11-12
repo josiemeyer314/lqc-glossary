@@ -32,6 +32,14 @@ console.log(
             glossary =
                 await response.json();
 
+            console.log(
+            `[LQC-Glossary] Loaded glossary with ${
+        Object.keys(glossary).length
+    } entries`
+);
+
+console.table(glossary);
+
         }
         catch (error) {
 
