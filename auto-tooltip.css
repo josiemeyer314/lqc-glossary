@@ -1,50 +1,143 @@
-.qise-term {
+/* =======================================================
+   Tooltip Trigger Elements
+   ======================================================= */
+
+.qise-term,
+.qise-custom-tooltip {
     color: DarkOrange;
     cursor: help;
     border-bottom: 1px dotted DarkOrange;
+    text-decoration: none;
 }
 
-.tooltip
-{
+.qise-term:hover,
+.qise-custom-tooltip:hover {
+    color: #ff9f2e;
+}
+
+.qise-term:focus,
+.qise-custom-tooltip:focus {
+    outline: 2px solid DarkOrange;
+    outline-offset: 2px;
+}
+
+
+/* =======================================================
+   Tooltip Container
+   ======================================================= */
+
+.qise-tooltip {
+    position: absolute;
+    z-index: 10000;
+
     text-align: center;
     color: #fff;
-    background: #111 !important;
-    position: absolute;
-    z-index: 100;
+    background: #111;
+
     padding: 15px;
+
+    line-height: 1.4;
+    font-size: 0.95rem;
+
+    min-width: 120px;
+    max-width: 340px;
+
+    border-radius: 6px;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.3);
+
+    pointer-events: auto;
 }
- 
-    .tooltip:after /* triangle decoration */
-    {
-        width: 0;
-        height: 0;
-        border-left: 10px solid transparent;
-        border-right: 10px solid transparent;
-        border-top: 10px solid #111;
-        content: '';
-        position: absolute;
-        left: 50%;
-        bottom: -10px;
-        margin-left: -10px;
-    }
- 
-       .tooltip.top:after
-        {
-            border-top-color: transparent;
-            border-bottom: 10px solid #111;
-            top: -20px;
-            bottom: auto;
-        }
- 
-        .tooltip.left:after
-        {
-            left: 10px;
-            margin: 0;
-        }
- 
-        .tooltip.right:after
-        {
-            right: 10px;
-            left: auto;
-            margin: 0;
-        }
+
+
+/* =======================================================
+   Triangle Decoration
+   ======================================================= */
+
+.qise-tooltip:after {
+    content: '';
+
+    position: absolute;
+
+    width: 0;
+    height: 0;
+
+    left: 50%;
+    bottom: -10px;
+    margin-left: -10px;
+
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #111;
+}
+
+
+/* =======================================================
+   Top Placement
+   ======================================================= */
+
+.qise-tooltip.top:after {
+    border-top-color: transparent;
+    border-bottom: 10px solid #111;
+
+    top: -20px;
+    bottom: auto;
+}
+
+
+/* =======================================================
+   Left Edge Adjustment
+   ======================================================= */
+
+.qise-tooltip.left:after {
+    left: 10px;
+    margin: 0;
+}
+
+
+/* =======================================================
+   Right Edge Adjustment
+   ======================================================= */
+
+.qise-tooltip.right:after {
+    right: 10px;
+    left: auto;
+    margin: 0;
+}
+
+
+/* =======================================================
+   Tooltip Content Formatting
+   ======================================================= */
+
+.qise-tooltip p {
+    margin: 0.5em 0;
+}
+
+.qise-tooltip p:first-child {
+    margin-top: 0;
+}
+
+.qise-tooltip p:last-child {
+    margin-bottom: 0;
+}
+
+.qise-tooltip strong {
+    font-weight: 600;
+}
+
+.qise-tooltip em {
+    font-style: italic;
+}
+
+.qise-tooltip ul,
+.qise-tooltip ol {
+    text-align: left;
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+}
+
+.qise-tooltip li {
+    margin: 0.25em 0;
+}
