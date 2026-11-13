@@ -2,7 +2,7 @@
 
 (function () {
 
-const LQC_GLOSSARY_VERSION = "0.2.4";
+const LQC_GLOSSARY_VERSION = "0.2.5";
 
 console.log(
   `%cLQC Glossary ${LQC_GLOSSARY_VERSION} loaded`,
