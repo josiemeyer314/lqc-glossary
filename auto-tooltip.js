@@ -245,24 +245,27 @@ console.log(
   // PROCESS SURVEY
   //////////////////////////////////////////////////////
 
-  function processSurveyCanvas() {
+function processSurveyCanvas() {
 
-    const canvas =
-      document.querySelector(
-        CANVAS_SELECTOR
-      );
+  const targets = document.querySelectorAll(
+    ".question-display.rich-text"
+  );
 
-    if (!canvas) {
+  if (!targets.length) {
 
-      console.warn(
-        "[LQC] survey-canvas not found"
-      );
+    console.warn(
+      "[LQC] No .question-display.rich-text elements found"
+    );
 
-      return;
-    }
+    return;
+  }
+
+  let replacementCount = 0;
+
+  targets.forEach((element) => {
 
     const original =
-      canvas.innerHTML;
+      element.innerHTML;
 
     if (!original.includes("[[")) {
       return;
@@ -273,21 +276,27 @@ console.log(
 
     if (processed !== original) {
 
-      canvas.innerHTML =
+      element.innerHTML =
         processed;
 
-      console.log(
-        "[LQC] Tooltip replacements completed."
-      );
-
-      console.log(
-        document.querySelectorAll(
-          ".qise-term,.qise-custom-tooltip"
-        ).length,
-        "tooltip(s) inserted"
-      );
+      replacementCount++;
     }
+  });
+
+  if (replacementCount > 0) {
+
+    console.log(
+      "[LQC] Tooltip replacements completed."
+    );
+
+    console.log(
+      document.querySelectorAll(
+        ".qise-term,.qise-custom-tooltip"
+      ).length,
+      "tooltip(s) inserted"
+    );
   }
+}
 
   //////////////////////////////////////////////////////
   // EVENTS
